@@ -1,0 +1,25 @@
+services:
+  ace:
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    env_file: .env
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb
+    restart: unless-stopped
+    volumes:
+      - "mariadb:/var/lib/mysql"
+    env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb -uroot --password=$$MYSQL_ROOT_PASSWORD -e 'select 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mariadb:
